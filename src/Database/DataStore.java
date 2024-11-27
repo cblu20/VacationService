@@ -43,12 +43,13 @@ public class DataStore {
         Mitarbeiter mitTmp = getMitarbeiter(idMitarbeiter);
         UrlaubList list = mitarbeiterUrlaub.get(mitTmp);
 
-        if(list!=null) {
+        if (list != null) {
             list.addUrlaubToList(urlaub);
-        }else {
+        } else {
             list = new UrlaubList(mitTmp.id);
+            list.addUrlaubToList(urlaub);
+            mitarbeiterUrlaub.put(mitTmp, list);
         }
-        mitarbeiterUrlaub.put(mitTmp, list);
     }
 
     public static void removeUrlaub(int idMitarbeiter, Urlaub urlaub) throws Exception {
@@ -74,10 +75,14 @@ public class DataStore {
         }
     }
 
+    public static List<Mitarbeiter> getMitarbeiterList() {
+        return mitarbeiterList;
+    }
+
     public static void SetTestData() throws Exception {
-        Mitarbeiter mitarbeiter1 = new Mitarbeiter("Max Mustermann","Logistik");
-        Mitarbeiter mitarbeiter2 = new Mitarbeiter("Max Mustermann","Logistik");
-        Mitarbeiter mitarbeiter3 = new Mitarbeiter("Max Mustermann","Logistik");
+        Mitarbeiter mitarbeiter1 = new Mitarbeiter("Leon Löwe","Logistik");
+        Mitarbeiter mitarbeiter2 = new Mitarbeiter("Anna Apfel","Verkauf");
+        Mitarbeiter mitarbeiter3 = new Mitarbeiter("Tim Turm","Einkauf");
 
         Urlaub urlaub1 = new Urlaub("10/10/2024","20/10/2024",mitarbeiter1.id);
         Urlaub urlaub2 = new Urlaub("05/12/2024","18/12/2024",mitarbeiter1.id);

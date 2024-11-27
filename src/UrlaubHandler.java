@@ -1,6 +1,8 @@
 import Database.DataStore;
 import Models.Mitarbeiter;
 import Models.UrlaubList;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -40,7 +42,10 @@ public class UrlaubHandler implements HttpHandler {
         // Objekt zum Erstellen von JSON
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Eine Map, die die Daten strukturiert, um sie als JSON zu speichern
+        objectMapper.registerModule(new JavaTimeModule());
+
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
         Map<String, Object> exportData = new java.util.HashMap<>();
 
         // Gehe durch alle Mitarbeiter in der Map
@@ -49,11 +54,11 @@ public class UrlaubHandler implements HttpHandler {
             UrlaubList urlaubsListe = entry.getValue();
 
             // Erstelle eine Map für den Mitarbeiter, die seine Urlaubsinfos enthält
-            Map<String, Object> mitarbeiterInfo = new java.util.HashMap<>();
-            mitarbeiterInfo.put("id", mitarbeiter.id);
-            mitarbeiterInfo.put("name", mitarbeiter.name);
-            mitarbeiterInfo.put("abteilung", mitarbeiter.abteilung);
-            mitarbeiterInfo.put("urlaube", urlaubsListe);
+            Map<String, Object> mitarbeiterInfo = new java.util.LinkedHashMap<>();
+            mitarbeiterInfo.put("Id", mitarbeiter.id);
+            mitarbeiterInfo.put("Name", mitarbeiter.name);
+            mitarbeiterInfo.put("Abteilung", mitarbeiter.abteilung);
+            mitarbeiterInfo.put("Urlaube", urlaubsListe);
 
 
             exportData.put("mitarbeiter_" + mitarbeiter.id, mitarbeiterInfo);

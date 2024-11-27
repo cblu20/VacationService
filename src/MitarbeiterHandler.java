@@ -1,3 +1,5 @@
+import Database.DataStore;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -14,21 +16,26 @@ public class MitarbeiterHandler implements HttpHandler {
         // Überprüfen des HTTP-Methodentyps
         String method = exchange.getRequestMethod();
         if ("GET".equals(method)) {
-            response = "GET: Urlaubsanträge abrufen!";
-        } else if ("POST".equals(method)) {
-            response = "POST: Neuen Urlaubsantrag erstellen!";
-        } else if ("PUT".equals(method)) {
-            response = "PUT: Urlaubsantrag aktualisieren!";
-        } else if ("DELETE".equals(method)) {
-            response = "DELETE: Urlaubsantrag löschen!";
+            response = ExportiereMitarbeiterAlsJson();
         } else {
             response = "Methode nicht unterstützt!";
             statusCode = 405;  // Method Not Allowed
         }
 
+        exchange.getResponseHeaders().set("Content-Type", "application/json");
         exchange.sendResponseHeaders(statusCode, response.getBytes().length);
         OutputStream os = exchange.getResponseBody();
         os.write(response.getBytes());
         os.close();
+    }
+
+    private String ExportiereMitarbeiterAlsJson() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(DataStore.getMitarbeiterList());
+        } catch (Exception e) {
+            System.err.println("Fehler beim Konvertieren der Mitarbeiter-Liste: " + e.getMessage());
+            return "{FEHLER}";
+        }
     }
 }
